@@ -7,12 +7,12 @@ const libraryRoute = Router()
 
 const libraryPattern ={
     getBooks : '/books',
-    postBook : '/book',
+    postBook : '/book/add',
     updateBook : '/books/:id',
     deleteBook : '/books/:id'
 }
 
-libraryRoute.get(libraryPattern.getBooks,authMiddleWare, libraryController.getAllBooks)
+libraryRoute.get(libraryPattern.getBooks, libraryController.getAllBooks)
 libraryRoute.post(libraryPattern.postBook,authMiddleWare,verifRole, libraryController.addBook)
 libraryRoute.put(libraryPattern.updateBook,authMiddleWare,verifRole, libraryController.updateBook)
 libraryRoute.delete(libraryPattern.deleteBook,authMiddleWare,verifRole,libraryController.deleteBook)

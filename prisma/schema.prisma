@@ -35,20 +35,17 @@ model users {
   //relations 
   loans         loan[]
   notifications notification[]
-  books         library[]
 }
 
 model library {
   Lib_id      String   @id @default(uuid()) @map("_id")
-  title       String
+  title       String 
   author      String
   description String
   publishDate DateTime @default(now())
   ISBN        String?
 
-  //relation
-  booksId String
-  library users  @relation(fields: [booksId], references: [user_id], onDelete: Cascade)
+  //relations
 
   loans loan[]
   books notification[]
@@ -63,9 +60,9 @@ model loan {
   //relations
   notifications notification[]
 
-  userId  String
+  userId  String @unique
   user    users   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
-  booksId String
+  booksId String  @unique
   library library @relation(fields: [booksId], references: [Lib_id], onDelete: Cascade)
 }
 

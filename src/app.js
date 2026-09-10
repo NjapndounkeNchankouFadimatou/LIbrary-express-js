@@ -20,6 +20,6 @@ app.use(limiter)
 //route
 app.use('/profile' , userRoute)
 app.use('/library' , libraryRoute)
-app.use('/BookLoans' , libraryRoute)
+app.use('/bookLoans' , loansRouter)
 
 export default app

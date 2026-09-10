@@ -7,23 +7,23 @@ import jwt from 'jsonwebtoken'
 
 const generated_access_token = (user) => {
     return jwt.sign({
-        id: user.id,
+        id: user.user_id,
         name: user.name,
         role: user.role
     },
-        process.env.ACCESS_KEY,
-        { expiredIn: "3m" }
+        process.env.ACCES_KEY,
+        { expiresIn: "10m" }
 
     )
 }
 const generated_refresh_token = (user) => {
     return jwt.sign({
-        id: user.id,
+        id: user.user_id,
         name: user.name,
         role: user.role
     },
-        process.env.ACCESS_KEY,
-        { expiredIn: "7d" }
+        process.env.REFRESH_KEY,
+        { expiresIn: "7d" }
 
     )
 }
@@ -41,7 +41,7 @@ const userController = {
                 return res.status(httpCode.BAD_REQUEST).json({ message: "You are already a user " })
             }
 
-            const hashPassword = await bcrypt.hash(password ,10)
+            const hashPassword = await bcrypt.hash(password, 10)
 
             const user = await prisma.users.create({
                 data: {
@@ -65,6 +65,10 @@ const userController = {
         try {
             const { email, password } = req.body
 
+            if (!password || !email){
+                return res.status(httpCode.BAD_REQUEST).json({ message: "All the fields are required" })
+            }
+
             const user = await prisma.users.findUnique({
                 where: { email }
             })
@@ -77,22 +81,20 @@ const userController = {
                 return res.status(httpCode.BAD_REQUEST).json({ message: "Wrong password or email " })
             }
 
-
             const accessToken = generated_access_token(user)
             const refreshToken = generated_refresh_token(user)
 
             const connectedUser = await prisma.users.update({
-                where: { id: user.id },
+                where: { user_id: user.user_id },
                 data: { refresh: refreshToken }
             })
 
             return res.status(httpCode.BAD_REQUEST).json({
                 message: "Successfully connected",
                 acess: accessToken,
-                refresh: refreshToken
+                refresh: refreshToken,
+                connectedUser
             })
-
-
         }
         catch (error) {
             return res.status(httpCode.SERVER_ERROR).json({ message: "Erreur du server", error: error.message })
@@ -106,16 +108,16 @@ const userController = {
             if (!accessToken) {
                 return res.status(httpCode.NOT_FOUND).json({ message: "NO TOKEN" });
             }
-             const decoded = jwt.decode(accessToken);
-             profileId =  decoded.id
+            const decoded = jwt.verify(accessToken , process.env.ACCES_KEY);
+            const profileId = decoded.id
 
             await prisma.users.update({
-                where: { id: profileId },
+                where: { user_id: profileId },
                 data: { deconnect: accessToken },
             });
 
-            await prisma.refreshToken.delete({
-                where: { id: profileId},
+            await prisma.users.update({
+                where: { user_id: profileId },
                 data: { refresh: null }
             });
 
@@ -131,7 +133,7 @@ const userController = {
             const { id } = req.params
 
             const profile = await prisma.users.findUnique({
-                where: { id }
+                where: { user_id: id }
             })
 
             if (!profile) {
@@ -153,20 +155,23 @@ const userController = {
                 return res.status(httpCode.BAD_REQUEST).json({ message: "All the fields are required" })
 
             const userExist = await prisma.users.findUnique({
-                where: { id }
+                where: { user_id: id }
             })
-            if (userExist) {
-                return res.status(httpCode.BAD_REQUEST).json({ message: "No profil found" })
+            if (!userExist) {
+                return res.status(httpCode.NOT_FOUND).json({ message: "No profile found" })
             }
 
             const updatedProfile = await prisma.users.update({
-                where: { id: userExist.id },
+                where: { user_id: userExist.user_id },
                 data: {
                     name: name ?? userExist.name,
                     email: email ?? userExist.email,
                     password: password ?? userExist.password
                 }
             })
+
+            return res.status(httpCode.OK).json({ message: "Profile updated", updatedProfile })
+
         }
         catch (error) {
             return res.status(httpCode.SERVER_ERROR).json({ message: "Erreur du server", error: error.message })
@@ -182,14 +187,17 @@ const userController = {
             const userExist = await prisma.users.findUnique({
                 where: { email: email }
             })
-            if (userExist) {
+            if (!userExist) {
                 return res.status(httpCode.BAD_REQUEST).json({ message: "No profile found" })
             }
 
-            const DeletedProfile = await prisma.users.delete({
-                where: { id: userExist.id },
+            const deletedProfile = await prisma.users.delete({
+                where: { user_id: userExist.user_id },
             })
+            return res.status(httpCode.OK).json({ message: "Profile Deleted successfully", deletedProfile })
+
         }
+
         catch (error) {
             return res.status(httpCode.SERVER_ERROR).json({ message: "Erreur du server", error: error.message })
 
