@@ -14,29 +14,63 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model users {
-//   id       String @id @default(uuid()) @map("_id")
-//   name     String
-//   email    String @unique
-//   password String
-// }
+model users {
+  user_id       String @id @default(uuid()) @map("_id")
+  name     String
+  email    String @unique
+  password String
 
-// model library {
-//   id          String @id @default(uuid()) @map("_id")
-//   title       String
-//   author      String
-//   description String
-//   publishDate String
-//   ISBN        String
-// }
 
-// model loan {
-//   id         String @id @default(uuid()) @map("_id")
-//   loanDate   String
-//   returnDate String
-// }
+  //relations 
+  loans loan[]
+  notifications notification[]
+  books library[]
+}
 
-// model notification {
-//   id      String @id @default(uuid()) @map("_id")
-//   message String
-// }
+model library {
+  Lib_id          String @id @default(uuid()) @map("_id")
+  title       String
+  author      String
+  description String
+  publishDate   DateTime @default(now())
+  ISBN        String
+
+  //relation
+  booksId  String
+  library users @relation(fields: [booksId] , references: [user_id] ,onDelete : Cascade )
+
+  loans loan[]
+  books notification[]
+}
+
+model loan {
+  loan_id         String @id @default(uuid()) @map("_id")
+  loanDate   DateTime @default(now())
+  returnDate  DateTime @default(now())
+
+  //relations
+  notifications notification[]
+
+  userId  String
+  user users @relation(fields: [userId] , references: [user_id]  , onDelete : Cascade)
+  booksId  String
+  library library @relation(fields: [booksId] , references: [Lib_id] ,onDelete : Cascade )
+
+
+}
+
+model notification {
+  id      String @id @default(uuid()) @map("_id")
+  message String
+
+  //relations 
+  userId  String
+  user users @relation(fields: [userId] , references: [user_id] , onDelete : Cascade)
+
+  libraryId  String
+  library library @relation(fields: [libraryId] , references: [Lib_id] , onDelete : Cascade)
+
+  loanId   String
+  loan loan @relation(fields: [loanId] , references: [loan_id] ,onDelete : Cascade )
+
+}
