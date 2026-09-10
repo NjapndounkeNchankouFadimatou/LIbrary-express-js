@@ -18,6 +18,10 @@ enum Role {
   USER
   ADMIN
 }
+enum Status {
+  LOANED
+  AVAILABLE
+}
 
 model users {
   user_id  String @id @default(uuid()) @map("_id")
@@ -40,7 +44,7 @@ model library {
   author      String
   description String
   publishDate DateTime @default(now())
-  ISBN        String
+  ISBN        String?
 
   //relation
   booksId String
@@ -51,7 +55,8 @@ model library {
 }
 
 model loan {
-  loan_id    String   @id @default(uuid()) @map("_id")
+  loan_id    String   @id @default(uuid()) @map("_id")  
+  status Status @default(AVAILABLE)
   loanDate   DateTime @default(now())
   returnDate DateTime @default(now())
 
