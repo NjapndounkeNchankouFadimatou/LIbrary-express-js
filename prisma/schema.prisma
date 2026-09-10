@@ -14,49 +14,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model users {
-  user_id       String @id @default(uuid()) @map("_id")
+  user_id  String @id @default(uuid()) @map("_id")
   name     String
   email    String @unique
   password String
-
+  role     Role   @default(USER)
+  refresh  String?
+  deconnect   String?
 
   //relations 
-  loans loan[]
+  loans         loan[]
   notifications notification[]
-  books library[]
+  books         library[]
 }
 
 model library {
-  Lib_id          String @id @default(uuid()) @map("_id")
+  Lib_id      String   @id @default(uuid()) @map("_id")
   title       String
   author      String
   description String
-  publishDate   DateTime @default(now())
+  publishDate DateTime @default(now())
   ISBN        String
 
   //relation
-  booksId  String
-  library users @relation(fields: [booksId] , references: [user_id] ,onDelete : Cascade )
+  booksId String
+  library users  @relation(fields: [booksId], references: [user_id], onDelete: Cascade)
 
   loans loan[]
   books notification[]
 }
 
 model loan {
-  loan_id         String @id @default(uuid()) @map("_id")
+  loan_id    String   @id @default(uuid()) @map("_id")
   loanDate   DateTime @default(now())
-  returnDate  DateTime @default(now())
+  returnDate DateTime @default(now())
 
   //relations
   notifications notification[]
 
   userId  String
-  user users @relation(fields: [userId] , references: [user_id]  , onDelete : Cascade)
-  booksId  String
-  library library @relation(fields: [booksId] , references: [Lib_id] ,onDelete : Cascade )
-
-
+  user    users   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+  booksId String
+  library library @relation(fields: [booksId], references: [Lib_id], onDelete: Cascade)
 }
 
 model notification {
@@ -64,13 +69,12 @@ model notification {
   message String
 
   //relations 
-  userId  String
-  user users @relation(fields: [userId] , references: [user_id] , onDelete : Cascade)
+  userId String
+  user   users  @relation(fields: [userId], references: [user_id], onDelete: Cascade)
 
-  libraryId  String
-  library library @relation(fields: [libraryId] , references: [Lib_id] , onDelete : Cascade)
+  libraryId String
+  library   library @relation(fields: [libraryId], references: [Lib_id], onDelete: Cascade)
 
-  loanId   String
-  loan loan @relation(fields: [loanId] , references: [loan_id] ,onDelete : Cascade )
-
+  loanId String
+  loan   loan   @relation(fields: [loanId], references: [loan_id], onDelete: Cascade)
 }

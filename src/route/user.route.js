@@ -7,7 +7,7 @@ const userPattern ={
     signup : '/users/signup',
     login :'users/login',
     logout :'users/logout',
-    getUser :'users/profile',
+    getUser :'users/profile/:id',
     update :'users/profile',
     delete :'users/profile',
 }
@@ -16,7 +16,7 @@ userRoute.post(userPattern.signup , userController.signup)
 userRoute.post(userPattern.login , userController.login)
 userRoute.post(userPattern.logout , userController.logout)
 userRoute.get(userPattern.getUser , userController.getProfile)
-userRoute.update(userPattern.update , userController.updateProfile)
+userRoute.put(userPattern.update , userController.updateProfile)
 userRoute.delete(userPattern.delete , userController.deleteProfile)
 
 
