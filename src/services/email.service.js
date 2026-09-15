@@ -40,7 +40,7 @@ const emailSender = {
 
     },
 
-    BooksNotif: async (username, useremail) => {
+    BooksNotif: async (username, useremail,returnDate) => {
         try {
             const mailOption = {
                 from: ` "Fatima" <${process.env.EMAIL_USER}>`,
@@ -49,7 +49,7 @@ const emailSender = {
                 html: `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
                         <h2 style="color: #4A90E2; text-align: center;">!!!DATE DE REMISE </h2>
                         <p>Bonjour, ${username}</p>
-                        <p>Ceci est un un message pour vous notifie de l'approche de la date de remise du livre emprunte </p>
+                        <p>Ceci est un un message pour vous notifie de l'approche de la date de remise du livre emprunte qui est ${returnDate} </p>
                         <p>Vous pouvez dès à présent vous connecter pour avoir acess a tout nos livre en exclusifs.</p>
                         <p style="font-size: 0.9em; color: #777;">Cordialement,<br>Fatima$Co</p>
                     </div>   

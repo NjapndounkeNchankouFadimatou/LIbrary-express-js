@@ -8,7 +8,7 @@ const loansRouter = Router()
 const loansPattern = {
     makeLoan : '/loan',
     updateLoan : '/loans/:id',
-    getLoans : '/loans/user/',
+    getLoans : '/loans/user/:id',
 }
 
 loansRouter.post(loansPattern.makeLoan,authMiddleWare,loanController.addLooan)
