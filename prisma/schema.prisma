@@ -53,24 +53,24 @@ model library {
 }
 
 model loan {
-  loan_id    String   @id @default(uuid()) @map("_id")
-  status     Status   @default(AVAILABLE)
-  isReserved Boolean @default(false)
-  loanDate   DateTime @default(now())
-  dueDate DateTime?
+  loan_id    String    @id @default(uuid()) @map("_id")
+  status     Status    @default(AVAILABLE)
+  loanDate   DateTime  @default(now())
+  dueDate    DateTime?
 
   //relations
   notifications notification[]
 
-  userId  String  @unique
+  userId  String  
   user    users   @relation(fields: [userId], references: [user_id], onDelete: Cascade)
-  booksId String  @unique
+  booksId String  
   library library @relation(fields: [booksId], references: [Lib_id], onDelete: Cascade)
 }
 
 model notification {
-  id      String @id @default(uuid()) @map("_id")
-  message String
+  notif_id      String @id @default(uuid()) @map("_id")
+  message String?
+  notif_status String  @default('en attente)
 
   //relations 
   userId String

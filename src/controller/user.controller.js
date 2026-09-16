@@ -12,7 +12,7 @@ const generated_access_token = (user) => {
         role: user.role
     },
         process.env.ACCES_KEY,
-        { expiresIn: "10m" }
+        { expiresIn: "30m" }
 
     )
 }
@@ -49,7 +49,7 @@ const userController = {
                     name,
                     email,
                     password: hashPassword,
-                    role
+                    role : role
                 }
             })
 
